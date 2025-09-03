@@ -1,47 +1,30 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
-name: Deploy Python app to Azure Web App - spamemaildetector
+name: Build and Deploy
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      # Step 2: Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.9'
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      # Step 4: Login to Azure
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DF53B94837514C42A0F6D285CD6D5EDA }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B16F2E6433E24DE6A9431587620CDB1E }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9BC076F096194DDF86211C87AC3FB05B }}
-
-      # Step 5: Deploy to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'spamemaildetector'   # Exact Azure app name
+          app-name: 'spamemaildetector'   # exact Azure app name
           slot-name: 'Production'
-          package: '.'                   # Current repo folder deploy hoga
+          package: '.'
