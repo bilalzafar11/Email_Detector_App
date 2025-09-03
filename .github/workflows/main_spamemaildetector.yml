@@ -4,12 +4,13 @@ name: Deploy Python app to Azure Web App - spamemaildetector
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - main   # Jab main branch pe push hoga tab run karega
+  workflow_dispatch:   # Manual run option
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       # Step 1: Checkout repo
       - name: Checkout repository
@@ -25,9 +26,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # Step 4: Login to Azure
+      # Step 4: Azure Login
       - name: Login to Azure
         uses: azure/login@v2
         with:
