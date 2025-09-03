@@ -1,4 +1,3 @@
-# GitHub Actions workflow for deploying Python app to Azure Web App
 name: Deploy Python app to Azure Web App - spamemaildetector
 
 on:
@@ -10,6 +9,10 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write       # ✅ zaroori hai
+      contents: read        # ✅ repo read permission
 
     steps:
       # Step 1: Checkout repo
