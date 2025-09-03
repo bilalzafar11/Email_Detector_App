@@ -1,6 +1,5 @@
 # GitHub Actions workflow for deploying Python app to Azure Web App
-
-name: Build and Deploy
+name: Deploy Python app to Azure Web App - spamemaildetector
 
 on:
   push:
@@ -11,7 +10,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       # Step 1: Checkout repo
       - name: Checkout repository
@@ -21,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       # Step 3: Install dependencies
       - name: Install dependencies
@@ -41,6 +39,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'spamemaildetector'   # Azure app ka exact naam
+          app-name: 'spamemaildetector'   # Azure App ka exact name
           slot-name: 'Production'
           package: '.'
