@@ -34,18 +34,40 @@ else:
 # ==========================
 # Custom Rule-Based Filter
 # ==========================
-def custom_filter(email_text, model_prediction):
+def custom_filter(email_text, model_prediction, proba=None):
     trusted_keywords = [
         "meezan bank", "hbl", "mcb", "ubl", "askari bank",
-        "standard chartered", "linkedin", "leetcode", "payoneer"
+        "standard chartered", "easypaisa", "jazzcash",
+        "paypal", "payoneer", "linkedin", "leetcode",
+        "google", "microsoft", "youtube", "amazon"
     ]
 
     text_lower = email_text.lower()
 
+    # 1️⃣ Trusted sources → Not Spam
     for keyword in trusted_keywords:
         if keyword in text_lower:
             return "Not Spam"
 
+    # 2️⃣ Legit transaction or account-related alerts
+    if (
+        ("transaction" in text_lower or "credited" in text_lower or "received" in text_lower)
+        and ("account" in text_lower or "pkr" in text_lower)
+        and any(bank in text_lower for bank in ["meezan", "hbl", "mcb", "ubl", "askari"])
+    ):
+        return "Not Spam"
+
+    # 3️⃣ Confidence correction
+    if proba is not None:
+        spam_conf = proba[1] * 100
+        notspam_conf = proba[0] * 100
+
+        if model_prediction == "Spam" and spam_conf < 80:
+            # if looks like a transaction/invoice/statement, mark safe
+            if any(word in text_lower for word in ["transaction", "invoice", "statement", "account", "notification"]):
+                return "Not Spam"
+
+    # 4️⃣ Otherwise, return model prediction
     return model_prediction
 
 
@@ -74,7 +96,7 @@ def index():
                 proba = model.predict_proba(email_vector)[0]
 
                 raw_prediction = "Spam" if result == 1 else "Not Spam"
-                prediction = custom_filter(email_text, raw_prediction)
+                prediction = custom_filter(email_text, raw_prediction, proba)
 
                 spam_confidence = f"{proba[1] * 100:.2f}%"
                 notspam_confidence = f"{proba[0] * 100:.2f}%"
